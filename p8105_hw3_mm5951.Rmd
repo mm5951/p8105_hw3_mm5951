@@ -16,15 +16,16 @@ library(patchwork)
 
 Solution provided by teaching team.
 
+
 ## Problem 2
 Let's investigate the accelerometer dataset for the diagnosis of congestive heart failure (CHF). 
 
 ### Data import
-I first **load, tidy, and wrangle data** using the `read_csv` and `janitor::clean_names` functions. A variable to distinguish between weekdays and weekends is created using `mutate` function and place it next to the "day" column using `relocate`. 
+I first **load, tidy, and wrangle data** using the `read_csv` and `janitor::clean_names` functions. A variable to distinguish between weekdays and weekends is created using `mutate` function and placed next to the "day" column using `relocate`. 
 
-Next, I address the "activity_*" variables, which correspond to the activity counts for each minute of a 24-hour day starting at midnight. The dataframe is transposedusing the `pivot_longer` function, by which all activity observations are classified under "minute" according to the minute (1, 1440) of each of the five days to which they correspond, and its associated value falls under "activity_counts".
+Next, I address the "activity_*" variables, which correspond to the activity counts for each minute of a 24-hour day starting at midnight. The dataframe is transposed using the `pivot_longer` function, by which all activity observations are classified under "minute" according to the minute (1, 1440) of each of the five days to which they correspond, and its associated value falls under "activity_counts".
 
-Finally, the 6 resulting variables are coerced into number and factor types as adequate using the `as.numeric` and `factor` functions. 
+Finally, the resulting variables are coerced into number and factor types as adequate using the `as.numeric` and `factor` functions inside a `mutate`. 
 
 ```{r}
 accel_df = read_csv("data_problem2/accel_data.csv") %>%
@@ -54,39 +55,43 @@ str(accel_df)
 ### Dataset description
 The accel_df dataset contains five weeks of accelerometer data collected on a 63 year-old male with BMI 25, who was admitted to the Advanced Cardiac Care Center of Columbia University Medical Center and diagnosed with congestive heart failure (CHF). 
 
-The "accel_df" dataset contains `r nrow(accel_df)` observations of activity (accelerometer data), and there are `r ncol(accel_df)` variables, which are `r names(accel_df)` that describing the information of data. Specifically, `r names(accel_df)[5]` stands for the number of minute of a 24-hour day starting at midnight, range from `r range(pull(accel_df, minute))` minutes. And `r names(accel_df)[6]` stands for the activity count of the male collected by accelerometer, ranging from `r range(pull(accel_df, activity_counts))`.
+The "accel_df" dataset contains:
+* `r nrow(accel_df)` observations of activity (accelerometer data), and 
+* `r ncol(accel_df)` variables, which are `r names(accel_df)` that describe the information of data. 
+
+Notably, `r names(accel_df)[5]` represents the number of minute of a 24-hour day starting at midnight, which range from `r range(pull(accel_df, minute))` minutes. Additionally, `r names(accel_df)[6]` represent the activity count of the subject of study collected by accelerometer, ranging from `r range(pull(accel_df, activity_counts))`.
 
 
-### Daily activity [NEXT]
-Traditional analyses of accelerometer data focus on the total activity over the day. Using your tidied dataset, aggregate across minutes to create a total activity variable for each day, and create a table showing these totals. Are any trends apparent?
+### Total Daily Activity 
+Next, I aggregate across minutes to create a daily total activity variable using the `group by` function. In order to best understand the data, it is summarized into a table using the `summarize` and then `knitr::kable` functions.
 
 ```{r}
-total_activity_df = accel_df %>% 
+total_act_df = accel_df %>% 
   group_by(day_id) %>% 
   summarize(total_activity = sum(activity_counts)) 
-knitr::kable(total_activity_df)
+knitr::kable(total_act_df)
 ```
 
-Investigate trends:
+Next, I investigate apparent trends using the generated table out of "total_act_df", as well as some exploratory analyses graphs. To generate them, the `ggplot` function is used, placing the "day_id" in the X axis and "total_activity" in the Y axis. A scatterplot is generated with the `geom_point` argument, and points are united into a continous trend line using `geom_line`. The resulting graph characteristics are adjusted using `scale_x_continous` and `theme` to ensure readability.
 
 ```{r}
-ggplot(total_activity_df,aes(x = day_id, y = total_activity)) +
+ggplot(total_act_df,aes(x = day_id, y = total_activity)) +
   geom_point() +
   geom_line() +
   labs(
-    title = "Trend for total activity counts for each day in five weeks",
+    title = "Daily Total Activity (for the study period of 5 weeks)",
     x = "Day ID",
     y = "Total Activity counts",
-    caption = "Data from accel_data.csv"
+    caption = "Exploratory Analysis from the accel_data.csv Dataset"
   ) +
   scale_x_continuous(breaks = seq(0,35,by = 5)) +
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-The trend of total activity counts for each day is dramatically changed over time in five weeks.
+After exploratory analysis, no apparent trend of daily total activity becomes apparent, rather I conclude it has changed substantially daily over the five weeks of study period. Therefore, aggregating by total daily activity does not seem to be of extreme value when analysing the "accel_df" dataset. 
 
-### Data visualization [NEXT]
-Accelerometer data allows the inspection activity over the course of the day. Make a single-panel plot that shows the 24-hour activity time courses for each day and use color to indicate day of the week. Describe in words any patterns or conclusions you can make based on this graph.
+### 24-hour Daily Activity
+In order to investigate the dataset differently, I investigate the accelerometer-recorded activity over the course of the day. To do so, a different graph is generated using `ggplot`: this time, I place the minutes in the X axis, and the activity counts in the Y axis. As per homework instructions, each day of the week is given a different color. The graph details are adjusted similarly as above.
 
 ```{r fig.width = 10, fig.height = 9}
 accel_df %>% 
@@ -100,10 +105,12 @@ accel_df %>%
     title = "24-hour activity time courses for each day of the week",
     x = "Hours",
     y = "Activity counts",
-    caption = "Data from accel_data.csv"
+    caption = "Exploratory Analysis from the accel_data.csv Dataset"
   ) +
   theme(plot.title = element_text(hjust = 0.5))
 ```
 
-This 63 year-old male typically start activity at around 7 AM. The activity counts between 11 AM to 12 AM and 16 PM to 17 PM increased during weekend (Saturday and Sunday). There is a large increase in activity counts between 20 PM to 22 PM for most of the days in week (especially on Friday). And this male tend to sleep at around 22 PM.
+Some patterns become apparent when looking into the resulting visualization. First, the studied individual appears to be active between 6 AM and 22 AM daily. Some daily patterns are to be noted: for instance, Fridays at 9 AM there's an activity peak, and so there is Wednesdays at 8 PM. 
 
+## Problem 3
+Pending
