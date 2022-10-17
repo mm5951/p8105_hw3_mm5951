@@ -121,14 +121,14 @@ data("ny_noaa")
 ```
 
 ### NOAA dataset content description
-The "ny_noaa" dataset is characterized by:
+The **"ny_noaa" dataset is characterized** by:
 * variables
 * observations
 * some key variables
 * missing data
 
 ### NOAA data wrangling
-Next, I do some data cleaning including:
+Next, I do some **data cleaning and wrangling** including:
 * Set reasonable names using `janitor::clean_names` function
 * Drop NA using `dumpster`
 * Create separate variables for year, month, and day using `mutate`
@@ -141,11 +141,19 @@ Next, I do some data cleaning including:
 For snowfall, the most commonly observed values are XX
 
 ### NOAA data visualization (I): min & max temperatures
-Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?
+Next, using `ggplot` I make a **two-panel plot showing the average max temperature in January and in July** in each station across years. 
 
-Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); 
+```{r}
+
+```
+
+As per the data visualization results, 
+Is there any observable / interpretable structure? Any outliers?
 
 ### NOAA data visualization (II): snowfall distribution
-Make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.
+Next, using a similar function as above, I generate a **two-panel plot showing tmax vs tmin for the full dataset** and **the distribution of snowfall**, with values greater than 0 and less than 100 separately by year.
 
+```{r}
+
+```
 
