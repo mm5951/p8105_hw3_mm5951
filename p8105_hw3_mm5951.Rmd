@@ -5,11 +5,19 @@ date: "`r Sys.Date()`"
 output: github_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(ggridges)
 library(patchwork)
+```
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE) 
+knitr::opts_chunk$set(
+  fig.width = 12,
+  fig.asp = .6,
+  out.width = "95%")
 ```
 
 ## Problem 1
@@ -129,6 +137,7 @@ skimr::skim(ny_noaa)
 ```
 
 In summary, the "ny_noaa" dataset is characterized by:
+
 * contains data from 1981-01-01	to 2010-12-31	time period.
 * `r ncol(ny_noaa)` variables, which include: `r names(ny_noaa)`.
 * `r nrow(ny_noaa)` weather observations.
@@ -137,6 +146,7 @@ In summary, the "ny_noaa" dataset is characterized by:
 
 ### NOAA data wrangling
 Next, I do some **data cleaning and wrangling** to generate the "data_df" including:
+
 * Set reasonable names using `janitor::clean_names` function
 * Create separate variables for year, month, and day using `separate` 
 * Coerce the right data type for temperature, precipitation, and snowfall observations using `mutate` in combination with `as.numeric`and similar arguments.
@@ -147,7 +157,7 @@ noaa_df = ny_noaa %>%
   janitor::clean_names() %>%
   separate(date, into = c("year", "month", "day"), sep = '-') %>%
   mutate(month = as.numeric(month),
-         year = as.numeric(year),
+         year = as.factor(year),
          month = month.abb[month],
          month = factor(month, levels = month.abb),
          tmax = as.numeric(tmax),
@@ -196,7 +206,7 @@ As per the data visualization above ("max_temp" graph), clear trends become appa
 ### NOAA data visualization (II): tmax vs tmin & snowfall distribution
 Next, using a similar function as above, I generate a **two-panel plot** showing **tmax vs tmin for the full dataset** and **the distribution of snowfall**, with values greater than 0 and less than 100 separately by year. For the first panel, I use the `geom_hex`geometry, while for the snowfall distribution I opt for the `geom_XX` option within ggplot package.
 
-```{r}
+```{r, warning = FALSE, message=FALSE}
 MinMax_temp = noaa_df %>%
   ggplot(aes(x = tmax2, y = tmin2)) +
   geom_hex() +
@@ -207,31 +217,19 @@ MinMax_temp = noaa_df %>%
 
 snowfall = noaa_df %>%
   filter(snow > 0, snow < 100) %>%
-  ggplot(aes(x = year, y = mean(snow))) +
-  geom_violin() +
-  labs(title = "Snowfall Distribution over time (0-100 mm)",
-       x = "Time (years)",
-       y = "Snowfall (mm)",
+  ggplot(aes(x = snow, y = year)) +
+  geom_density_ridges(scale = 0.8) +
+  xlim(0, 100) +
+  labs(title = "Snowfall Distribution by Year (0-100 mm)",
+       x = "Snowfall (mm)",
+       y = "Time (years) ",
        caption = "Exploratory analysis from the ny_noaa dataset")
 
 MinMax_temp + snowfall
 ```
 
-The left panel can be read as a "heatmap", with a lighter blue area in the middle that indicates the most common combination of minimum and maximum temperature registered (in the entire NOAA dataset). Overall, the minimum and maximum temperatures tend to be quite similar, with a direct relationship between the two variables (when one increases, so does the other).
+The **left panel** can be read as a "heatmap", with a lighter blue area in the middle that indicates the most common combination of minimum and maximum temperature registered (in the entire NOAA dataset). Overall, the minimum and maximum temperatures tend to be quite similar, with a direct relationship between the two variables (when one increases, so does the other).
 
-As for the right panel, we observe that the average snowfall has oscillated between 31.50 mm and 32.00 mm each year, with wider variations in the last year.
+As for the **right panel**, we observe a stable distribution of snowfall overtime, with the majority of values concentrated between 0-25 mm of snow, some at 50 mm and some at 75 mm. 
 
-
-```{r}
-snowfall2 = noaa_df %>%
-  filter(snow > 0, snow < 100) %>%
-  ggplot(aes(x = year, y = sum(snow))) +
-  geom_violin() +
-  labs(title = "Snowfall Distribution over time (0-100 mm)",
-       x = "Time (years)",
-       y = "Snowfall (mm)",
-       caption = "Exploratory analysis from the ny_noaa dataset")
-
-snowfall2
-```
-
+*That's it for homework 3!*
