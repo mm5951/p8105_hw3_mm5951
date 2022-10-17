@@ -219,22 +219,8 @@ MinMax_temp + snowfall
 
 The left panel can be read as a "heatmap", with a lighter blue area in the middle that indicates the most common combination of minimum and maximum temperature registered (in the entire NOAA dataset). Overall, the minimum and maximum temperatures tend to be quite similar, with a direct relationship between the two variables (when one increases, so does the other).
 
-As for the right pannel, 
+As for the right panel, we observe that the average snowfall has oscillated between 31.50 mm and 32.00 mm each year, with wider variations in the last year.
 
-```{r}
-MinMax_temp2 = noaa_df %>%
-  select(id, tmax2, tmin2) %>% 
-  pivot_longer(
-    tmax2:tmin2,
-    names_to = "observation", 
-    values_to = "temp") %>% 
-  ggplot(aes(x = temp, fill = observation)) +
-  geom_density(alpha = .5) + 
-  facet_grid(~id) + 
-  viridis::scale_fill_viridis(discrete = TRUE)
-
-MinMax_temp2
-```
 
 ```{r}
 snowfall2 = noaa_df %>%
