@@ -129,20 +129,31 @@ skimr::skim(ny_noaa)
 ```
 
 In summary, the "ny_noaa" dataset is characterized by:
+* contains data from 1981-01-01	to 2010-12-31	time period.
 * `r ncol(ny_noaa)` variables, which include: `r names(ny_noaa)`.
 * `r nrow(ny_noaa)` weather observations.
 * there's substantial missing data, notably n=1,134,358 observations of maximum temperature, n=1,134,420 of minimum temperature, n=145,838  of precipitation, n=381,221 of snow and n=591,786 of snowd. 
 
 
 ### NOAA data wrangling
-Next, I do some **data cleaning and wrangling** including:
+Next, I do some **data cleaning and wrangling** to generate the "data_df" including:
 * Set reasonable names using `janitor::clean_names` function
-* Drop NA using `dumpster`
-* Create separate variables for year, month, and day using `mutate`
-* Ensure observations for temperature, precipitation, and snowfall are given in reasonable units using XX
+* Create separate variables for year, month, and day using `separate` 
+* Coerce the right data type for temperature, precipitation, and snowfall observations using `mutate`
+
+* Drop NA using `drop_na`******
 
 ```{r}
-
+noaa_df = ny_noaa %>%
+  janitor::clean_names() %>%
+  separate(date, into = c("year", "month", "day"), sep = '-') %>%
+  mutate(month = as.numeric(month),
+         year = as.numeric(year),
+         month = month.abb[month],
+         month = factor(month, levels = month.abb),
+         tmax = as.numeric(tmax),
+         tmin = as.numeric(tmin),
+         prcp = as.numeric(prcp))
 ```
 
 For snowfall, the most commonly observed values are XX
