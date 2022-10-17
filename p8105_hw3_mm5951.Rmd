@@ -194,9 +194,25 @@ max_temp
 As per the data visualization above ("max_temp" graph), clear trends become apparent. To be noted is each line corresponds to one station of data capturing, with all stations recording similar trends. January's mean maximum temperature ranges between -10 and 10 ºC, while July's is concentrated in the 20 and 30ºC range. Additionally, some outliers are observable, both in the average maximum temperatures in January (in 1982, 1994 and 2004, which were especially cold winters) and July (1988 was very cold on average, and 2010 was the warmest recorded summer within the entire dataset).
 
 ### NOAA data visualization (II): snowfall distribution
-Next, using a similar function as above, I generate a **two-panel plot showing tmax vs tmin for the full dataset** and **the distribution of snowfall**, with values greater than 0 and less than 100 separately by year.
+Next, using a similar function as above, I generate a **two-panel plot** showing **tmax vs tmin for the full dataset** and **the distribution of snowfall**, with values greater than 0 and less than 100 separately by year.
 
 ```{r}
+MinMax_temp = noaa_df %>%
+  ggplot(aes(x = tmax2, y = tmin2)) +
+  geom_hex() +
+  labs(title = "Minumum vs Maximum Temperature over time",
+       x = "Minimum Temperature (ºC)",
+       y = "Maximum Temperature (ºC)",
+       caption = "Exploratory analysis from the ny_noaa dataset")
 
+snowfall = noaa_df %>%
+  filter(snow > 0, snow < 100) %>%
+  ggplot(aes(x = snow, y = year)) +
+  labs(title = "Snowfall Distribution over time (0-100 mm)",
+       x = "Snowfall (mm)",
+       y = "Time (years)",
+       caption = "Exploratory analysis from the ny_noaa dataset")
+
+MinMax_temp + snowfall
 ```
 
