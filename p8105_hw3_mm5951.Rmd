@@ -140,6 +140,7 @@ Next, I do some **data cleaning and wrangling** to generate the "data_df" includ
 * Set reasonable names using `janitor::clean_names` function
 * Create separate variables for year, month, and day using `separate` 
 * Coerce the right data type for temperature, precipitation, and snowfall observations using `mutate` in combination with `as.numeric`and similar arguments.
+* Express the variables "prcp", "tmax" and "tmin" in easy to interpret units (that is, in mm and ºC, instead of tenths of such unit as in the original dataset). As a result of the `mutate` function, 3 new columns (prcp2, tmin2, tmax2) are generated.
 
 ```{r}
 noaa_df = ny_noaa %>%
@@ -151,10 +152,13 @@ noaa_df = ny_noaa %>%
          month = factor(month, levels = month.abb),
          tmax = as.numeric(tmax),
          tmin = as.numeric(tmin),
-         prcp = as.numeric(prcp))
+         prcp = as.numeric(prcp),
+         prcp2 = prcp/10,
+         tmax2 = tmax/10,
+         tmin2 = tmin/10)
 ```
 
-In order to assess the snowfall the most commonly observed values, I generate a function `find_mode` to estimate the mode (see below), and then use it for the "snow" and "snwd" variables. In both cases, the mode is 0 (that is, most days during the year it doesn't snow).
+In order to assess the snowfall the most commonly observed values, I generate a function `find_mode` to estimate the mode (see below), and then use it for the "snow" variable. The mode is 0 (that is, most days during the year there's no snowfall).
 
 ```{r}
 find_mode <- function(x) {
@@ -164,18 +168,30 @@ find_mode <- function(x) {
 }
 
 find_mode(noaa_df$snow)
-find_mode(noaa_df$snwd)
 ```
 
 ### NOAA data visualization (I): min & max temperatures
 Next, using `ggplot` I make a **two-panel plot showing the average max temperature in January and in July** in each station across years. 
 
-```{r}
+```{r, warning = FALSE}
+max_temp = noaa_df %>%
+  filter(month == "Jan" | month == "Jul") %>%  
+  group_by(id, year, month) %>% 
+  summarize(mean_temp = mean(tmax2, na.rm = TRUE)) %>%
+  ggplot(aes(x = year, y = mean_temp, group = id)) +
+  geom_line() +
+  facet_grid(. ~ month) +
+  labs(
+    title = "Maximum temperature per station over time (January and July visualized)",
+    x = "Time (years)",
+    y = "Mean maximum temperature (ºC)",
+    caption = "Exploratory analysis from the ny_noaa dataset") +
+  theme(legend.position = "none")
 
+max_temp
 ```
 
-As per the data visualization results, 
-Is there any observable / interpretable structure? Any outliers?
+As per the data visualization above ("max_temp" graph), clear trends become apparent. To be noted is each line corresponds to one station of data capturing, with all stations recording similar trends. January's mean maximum temperature ranges between -10 and 10 ºC, while July's is concentrated in the 20 and 30ºC range. Additionally, some outliers are observable, both in the average maximum temperatures in January (in 1982, 1994 and 2004, which were especially cold winters) and July (1988 was very cold on average, and 2010 was the warmest recorded summer within the entire dataset).
 
 ### NOAA data visualization (II): snowfall distribution
 Next, using a similar function as above, I generate a **two-panel plot showing tmax vs tmin for the full dataset** and **the distribution of snowfall**, with values greater than 0 and less than 100 separately by year.
