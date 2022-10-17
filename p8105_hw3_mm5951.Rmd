@@ -113,4 +113,22 @@ accel_df %>%
 Some patterns become apparent when looking into the resulting visualization. First, the studied individual appears to be active between 6 AM and 22 AM daily. Some daily patterns are to be noted: for instance, Fridays at 9 AM there's an activity peak, and so there is Wednesdays at 8 PM. 
 
 ## Problem 3
-Pending
+This problem uses the NY NOAA data to conduct exploratory analyses. I will first **load the data from the p8105.datasets package** using the `library` function.
+
+```{r}
+library(p8105.datasets)
+data("ny_noaa")
+```
+
+### Dataset content description
+The "ny_noaa" dataset is characterized by:
+* 
+
+The goal is to do some exploration of this dataset. To that end, write a short description of the dataset, noting the size and structure of the data, describing some key variables, and indicating the extent to which missing data is an issue. Then, do or answer the following (commenting on the results of each):
+
+### Next section
+Do some data cleaning. Create separate variables for year, month, and day. Ensure observations for temperature, precipitation, and snowfall are given in reasonable units. For snowfall, what are the most commonly observed values? Why?
+Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?
+Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.
+
+
