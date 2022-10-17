@@ -139,9 +139,7 @@ In summary, the "ny_noaa" dataset is characterized by:
 Next, I do some **data cleaning and wrangling** to generate the "data_df" including:
 * Set reasonable names using `janitor::clean_names` function
 * Create separate variables for year, month, and day using `separate` 
-* Coerce the right data type for temperature, precipitation, and snowfall observations using `mutate`
-
-* Drop NA using `drop_na`******
+* Coerce the right data type for temperature, precipitation, and snowfall observations using `mutate` in combination with `as.numeric`and similar arguments.
 
 ```{r}
 noaa_df = ny_noaa %>%
@@ -156,7 +154,18 @@ noaa_df = ny_noaa %>%
          prcp = as.numeric(prcp))
 ```
 
-For snowfall, the most commonly observed values are XX
+In order to assess the snowfall the most commonly observed values, I generate a function `find_mode` to estimate the mode (see below), and then use it for the "snow" and "snwd" variables. In both cases, the mode is 0 (that is, most days during the year it doesn't snow).
+
+```{r}
+find_mode <- function(x) {
+  u <- unique(x)
+  tab <- tabulate(match(x, u))
+  u[tab == max(tab)]
+}
+
+find_mode(noaa_df$snow)
+find_mode(noaa_df$snwd)
+```
 
 ### NOAA data visualization (I): min & max temperatures
 Next, using `ggplot` I make a **two-panel plot showing the average max temperature in January and in July** in each station across years. 
