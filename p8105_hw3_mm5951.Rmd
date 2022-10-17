@@ -121,17 +121,18 @@ data("ny_noaa")
 ```
 
 ### NOAA dataset content description
-To have a **general overview of the ny_noaa dataset**, I use the `str` function to obtain a summary of the internal data structure of this dataframe.
+To have a **general overview of the ny_noaa dataset**, I use the `str` and `skimr::skim` functions to obtain a summary of the internal data structure of this dataframe and the key metrics of its content.
 
 ```{r}
 str(ny_noaa)
+skimr::skim(ny_noaa)
 ```
 
 In summary, the "ny_noaa" dataset is characterized by:
-* variables
-* observations
-* some key variables
-* missing data
+* `r ncol(ny_noaa)` variables, which include: `r names(ny_noaa)`.
+* `r nrow(ny_noaa)` weather observations.
+* there's substantial missing data, notably n=1,134,358 observations of maximum temperature, n=1,134,420 of minimum temperature, n=145,838  of precipitation, n=381,221 of snow and n=591,786 of snowd. 
+
 
 ### NOAA data wrangling
 Next, I do some **data cleaning and wrangling** including:
