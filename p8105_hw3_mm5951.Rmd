@@ -121,7 +121,13 @@ data("ny_noaa")
 ```
 
 ### NOAA dataset content description
-The **"ny_noaa" dataset is characterized** by:
+To have a **general overview of the ny_noaa dataset**, I use the `str` function to obtain a summary of the internal data structure of this dataframe.
+
+```{r}
+str(ny_noaa)
+```
+
+In summary, the "ny_noaa" dataset is characterized by:
 * variables
 * observations
 * some key variables
