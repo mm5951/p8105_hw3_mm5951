@@ -207,8 +207,8 @@ MinMax_temp = noaa_df %>%
 
 snowfall = noaa_df %>%
   filter(snow > 0, snow < 100) %>%
-  ggplot(aes(x = year, y = snow, group_by(year))) +
-  geom_line() +
+  ggplot(aes(x = year, y = mean(snow))) +
+  geom_violin() +
   labs(title = "Snowfall Distribution over time (0-100 mm)",
        x = "Time (years)",
        y = "Snowfall (mm)",
@@ -220,3 +220,32 @@ MinMax_temp + snowfall
 The left panel can be read as a "heatmap", with a lighter blue area in the middle that indicates the most common combination of minimum and maximum temperature registered (in the entire NOAA dataset). Overall, the minimum and maximum temperatures tend to be quite similar, with a direct relationship between the two variables (when one increases, so does the other).
 
 As for the right pannel, 
+
+```{r}
+MinMax_temp2 = noaa_df %>%
+  select(id, tmax2, tmin2) %>% 
+  pivot_longer(
+    tmax2:tmin2,
+    names_to = "observation", 
+    values_to = "temp") %>% 
+  ggplot(aes(x = temp, fill = observation)) +
+  geom_density(alpha = .5) + 
+  facet_grid(~id) + 
+  viridis::scale_fill_viridis(discrete = TRUE)
+
+MinMax_temp2
+```
+
+```{r}
+snowfall2 = noaa_df %>%
+  filter(snow > 0, snow < 100) %>%
+  ggplot(aes(x = year, y = sum(snow))) +
+  geom_violin() +
+  labs(title = "Snowfall Distribution over time (0-100 mm)",
+       x = "Time (years)",
+       y = "Snowfall (mm)",
+       caption = "Exploratory analysis from the ny_noaa dataset")
+
+snowfall2
+```
+
